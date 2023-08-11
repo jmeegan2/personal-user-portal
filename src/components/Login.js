@@ -1,50 +1,51 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import { Navigate } from 'react-router-dom';
 import './Login.css';
 
-async function loginUser(credentials) {
-    return fetch('http://localhost:8080/login', {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-    })
-    .then(data => data.json())
-}
+function Login() {
+  // State variables
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
 
-export default function Login({ setToken }) {
-    const [username, setUserName] = useState();
-    const [password, setPassword] = useState();
-
-    const handleSubmit = async e => {
-        e.preventDefault();
-        const token = await loginUser({
-            username,
-            password
-        });
-        setToken(token);
+  // Handle login button click
+  const handleLogin = () => {
+    // Authentication logic
+    // For simplicity, let's consider a basic hardcoded check.
+    if (username === 'user' && password === 'password') {
+      setLoggedIn(true);
+    } else {
+      alert("Login credentials incorrect");
+      setLoggedIn(false)
     }
-    return(
-        <div className="login-wrapper">
-            <h1>Please Log In</h1>
-        <form onSubmit={handleSubmit}>
-            <label>
-                <p>Username</p>
-                <input type="text" onChange={e => setUserName(e.target.value)}/>
-            </label>
-            <label>
-                <p>Password</p>
-                <input type="password" onChange={e => setPassword(e.target.value)}/>
-            </label>
-            <div>
-                <button type="submit">Submit</button>
-            </div>
-        </form>
-        </div>
-    )
+  };
+
+  // If already logged in, navigate to dashboard
+  if (loggedIn) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  // Login form JSX
+  return (
+    <div className="login-container">
+      <div className="login-box">
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={handleLogin}>Login</button>
+      </div>
+    </div>
+  );
 }
 
-Login.propTypes = {
-    setToken: PropTypes.func.isRequired
-}
+export default Login;

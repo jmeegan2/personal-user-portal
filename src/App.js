@@ -1,36 +1,25 @@
-import React from 'react';
-import './App.css';
-
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import Preferences from './components/Preferences';
-
-function setToken(userToken) {
-  sessionStorage.setItem('token', JSON.stringify(userToken));
-
-}
-
-function getToken() {
-  const tokenString = sessionStorage.getItem('token');
-  const userToken = JSON.parse(tokenString);
-  return userToken?.token
-}
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css'; // Make sure to import your CSS file
+import Login from './components/Login'; // Import your Login component
+import Dashboard from './components/Dashboard'; // Import your Dashboard component
+import Preferences from './components/Preferences'; // Import your Preferences component
 
 function App() {
-  const token = getToken();
-
-  if(!token) {
-    return <Login setToken={setToken} />
-  }
+  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
     <div className='wrapper'>
-      <h1>Application</h1>
       <BrowserRouter>
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/preferences" element={<Preferences />} />
+          {/* Set the default route to Login if not logged in */}
+          {!loggedIn && <Route path='/' element={<Login setLoggedIn={setLoggedIn} />} />}
+         
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/preferences' element={<Preferences />} />
+          
+          {/* Redirect to dashboard if logged in */}
+          {loggedIn && <Route path='*' element={<Navigate to="/dashboard" />} />}
         </Routes>
       </BrowserRouter>
     </div>
